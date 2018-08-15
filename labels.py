@@ -3,7 +3,6 @@ import pickle
 import glob
 from os.path import join, exists
 hc = []
-frameCount = 60
 
 def convert(dataset):
     rootpath = os.getcwd()
@@ -17,7 +16,7 @@ def convert(dataset):
         os.chdir(gesture)
 
         for file in glob.glob('*.jpg'):
-            hc.append([os.path.abspath(file), adhyan, frameCount])
+            hc.append([os.path.abspath(file), adhyan])
             print(adhyan)
 
     os.chdir(rootpath)

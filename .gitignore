@@ -159,6 +159,9 @@ venv.bak/
 videos/
 testing/
 test/
+bottlenecks/
+data/
+training_summaries/
 
 .idea/inspectionProfiles/
 .idea/misc.xml
