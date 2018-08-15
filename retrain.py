@@ -21,7 +21,7 @@ r"""Simple transfer learning with image modules from TensorFlow Hub.
 This example shows how to train an image classifier based on any
 TensorFlow Hub module that computes image feature vectors. By default,
 it uses the feature vectors computed by Inception V3 trained on ImageNet.
-See https://github.com/tensorflow/hub/blob/r0.1/docs/modules/image.md
+See https://github.com/tensorflow/hub/blob/master/docs/modules/image.md
 for more options.
 
 The top layer receives as input a 2048-dimensional vector (assuming
@@ -685,7 +685,7 @@ def add_input_distortions(flip_left_right, random_crop, random_scale,
   precrop_shape_as_int = tf.cast(precrop_shape, dtype=tf.int32)
   precropped_image = tf.image.resize_bilinear(decoded_image_4d,
                                               precrop_shape_as_int)
-  precropped_image_3d = tf.squeeze(precropped_image, squeeze_dims=[0])
+  precropped_image_3d = tf.squeeze(precropped_image, axis=[0])
   cropped_image = tf.random_crop(precropped_image_3d,
                                  [input_height, input_width, input_depth])
   if flip_left_right:
@@ -910,7 +910,7 @@ def save_graph_to_file(graph, graph_file_name, module_spec, class_count):
 
 
 def prepare_file_system():
-  # Setup the directory we'll write summaries to for TensorBoard
+  # Set up the directory we'll write summaries to for TensorBoard
   if tf.gfile.Exists(FLAGS.summaries_dir):
     tf.gfile.DeleteRecursively(FLAGS.summaries_dir)
   tf.gfile.MakeDirs(FLAGS.summaries_dir)
@@ -954,33 +954,14 @@ def export_model(module_spec, class_count, saved_model_dir):
   """
   # The SavedModel should hold the eval graph.
   sess, in_image, _, _, _, _ = build_eval_session(module_spec, class_count)
-  graph = sess.graph
-  with graph.as_default():
-    inputs = {'image': tf.saved_model.utils.build_tensor_info(in_image)}
-
-    out_classes = sess.graph.get_tensor_by_name('final_result:0')
-    outputs = {
-        'prediction': tf.saved_model.utils.build_tensor_info(out_classes)
-    }
-
-    signature = tf.saved_model.signature_def_utils.build_signature_def(
-        inputs=inputs,
-        outputs=outputs,
-        method_name=tf.saved_model.signature_constants.PREDICT_METHOD_NAME)
-
-    legacy_init_op = tf.group(tf.tables_initializer(), name='legacy_init_op')
-
-    # Save out the SavedModel.
-    builder = tf.saved_model.builder.SavedModelBuilder(saved_model_dir)
-    builder.add_meta_graph_and_variables(
-        sess, [tf.saved_model.tag_constants.SERVING],
-        signature_def_map={
-            tf.saved_model.signature_constants.
-            DEFAULT_SERVING_SIGNATURE_DEF_KEY:
-                signature
-        },
-        legacy_init_op=legacy_init_op)
-    builder.save()
+  with sess.graph.as_default() as graph:
+    tf.saved_model.simple_save(
+        sess,
+        saved_model_dir,
+        inputs={'image': in_image},
+        outputs={'prediction': graph.get_tensor_by_name('final_result:0')},
+        legacy_init_op=tf.group(tf.tables_initializer(), name='legacy_init_op')
+    )
 
 
 def main(_):
@@ -1035,7 +1016,7 @@ def main(_):
     jpeg_data_tensor, decoded_image_tensor = add_jpeg_decoding(module_spec)
 
     if do_distort_images:
-      # We will be applying distortions, so setup the operations we'll need.
+      # We will be applying distortions, so set up the operations we'll need.
       (distorted_jpeg_data_tensor,
        distorted_image_tensor) = add_input_distortions(
            FLAGS.flip_left_right, FLAGS.random_crop, FLAGS.random_scale,
@@ -1321,7 +1302,7 @@ if __name__ == '__main__':
           'https://tfhub.dev/google/imagenet/inception_v3/feature_vector/1'),
       help="""\
       Which TensorFlow Hub module to use.
-      See https://github.com/tensorflow/hub/blob/r0.1/docs/modules/image.md
+      See https://github.com/tensorflow/hub/blob/master/docs/modules/image.md
       for some publicly available ones.\
       """)
   parser.add_argument(

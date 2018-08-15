@@ -73,39 +73,38 @@ def main():
     #
     # print(graph.get_operations())
 
-    input_operation = graph.get_operation_by_name(input_name)
-    output_operation = graph.get_operation_by_name(output_name)
+    with tf.Session() as sess:
 
-    frame_predictions = []
-    correct = 0
+        input_operation = sess.graph.get_tensor_by_name(input_name)
+        output_operation = sess.graph.get_tensor_by_name('final_result:0')
 
-    pqbar = tqdm(total = len(frames))
-    for i, frame in enumerate(frames):
-        image = frame[0]
-        label = frame[1]
-        frameCount = frame[2]
-        t = read_tensor(image)
-        with tf.Session(graph = graph) as sess:
-            start = time.time()
-            results = sess.run(output_operation.outputs[0], {input_operation.outputs[0]: t})
+        frame_predictions = []
+        correct = 0
 
-        results = np.squeeze(results)
-        if i > 0 and i % 10 == 0:
-            pqbar.update(10)
+        pqbar = tqdm(total = len(frames))
+        for i, frame in enumerate(frames):
+            image = frame[0]
+            label = frame[1]
+            frameCount = frame[2]
+            t = tf.gfile.FastGFile(image, 'rb').read()
+            try:
+                start = time.time()
+                results = sess.run(output_operation, {'decodeJpeg/contents:0': t})
+                prediction = results[0]
+            except KeyboardInterrupt:
+                print('Error making predictions!')
+                continue
 
-        top = np.amax(results)
-        labels = load_labels(label_file)
-        index = np.argmax(results, axis=0)
+            frame_predictions.append([prediction, label])
+            if i > 0 and i % 10 == 0:
+                pqbar.update(10)
 
-        print(labels[index], " ", label)
-        frame_predictions.append([top, labels[index], frameCount])
-        if(labels[index] == label):
-            correct+=1
-    pqbar.close()
 
-    print("Correct :", correct, len(frame_predictions))
-    accuracy = correct / float(len(frame_predictions))
-    print("Accuracy:", accuracy)
+        pqbar.close()
+
+        print("Correct :", correct, len(frame_predictions))
+        accuracy = correct / float(len(frame_predictions))
+        print("Accuracy:", accuracy)
 
     with open('data/test-results' + '.pkl', 'wb') as fout:
         pickle.dump(frame_predictions, fout)
