@@ -22,8 +22,8 @@ def convert(dataset):
     os.chdir(rootpath)
     os.chdir(rootpath)
 
-    with open('data/test-labels.pkl', 'wb') as handle:
+    with open('data/training-labels.pkl', 'wb') as handle:
         pickle.dump(hc, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 
-convert("test/")
+convert("training/")
