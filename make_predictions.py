@@ -4,68 +4,103 @@ import tensorflow as tf
 from tqdm import tqdm
 
 
-def get_labels():
+def load_graph(model_file):
+    graph = tf.Graph()
+    graph_def = tf.GraphDef()
+
+    with open(model_file, "rb") as f:
+        graph_def.ParseFromString(f.read())
+    with graph.as_default():
+        tf.import_graph_def(graph_def)
+
+    return graph
+
+
+def read_tensor_from_image_file(file_name,
+                                input_height=299,
+                                input_width=299,
+                                input_mean=0,
+                                input_std=255):
+    input_name = "file_reader"
+    output_name = "normalized"
+    file_reader = tf.read_file(file_name, input_name)
+    image_reader = tf.image.decode_jpeg(file_reader, channels=3, name="jpeg_reader")
+    float_caster = tf.cast(image_reader, tf.float32)
+    dims_expander = tf.expand_dims(float_caster, 0)
+    resized = tf.image.resize_bilinear(dims_expander,  [input_height, input_width])
+    normalized = tf.divide(tf.subtract(resized, [input_mean]), [input_std])
+    sess = tf.Session()
+    result = sess.run(normalized)
+
+    return result
+
+
+def get_labels(label_file):
     """Return a list of our trained labels so we can
     test our training accuracy. The file is in the
     format of one label per line, in the same order
     as the predictions are made. The order can change
     between training runs."""
-    with open("retrained_labels.txt", 'r') as fin:
-        labels = [line.rstrip('\n') for line in fin]
-    return labels
+    label = []
+    lines = tf.gfile.GFile(label_file).readlines()
+    for i in lines:
+        label.append(i.rstrip())
+
+    return label
 
 
 def predict_on_frames(frames, batch):
     """Given a list of frames, predict all their classes."""
     # Unpersists graph from file
-    with tf.gfile.FastGFile("retrained_graph.pb", 'rb') as fin:
-        graph_def = tf.GraphDef()
-        graph_def.ParseFromString(fin.read())
-        _ = tf.import_graph_def(graph_def, name='')
 
-    print(sorted([op.name for op in tf.get_default_graph().get_operations]))
+    model_file = "retrained_graph.pb"
+    label_file = "retrained_labels.txt"
+    input_height = 299
+    input_width = 299
+    input_mean = 0
+    input_std = 255
+    input_layer = "Placeholder"
+    output_layer = "final_result"
 
-    with tf.Session() as sess:
-        softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
+    graph = load_graph(model_file)
 
-        frame_predictions = []
-        # image_path = 'images/' + batch + '/'
-        pbar = tqdm(total=len(frames))
-        for i, frame in enumerate(frames):
-            filename = frame[0]
-            label = frame[1]
-            frameCount = frame[2]
+    frames = get_labels(label_file)
 
-            # Get the image path.
-            image = frame[0]
-            # print image
+    input_name = "import/" + input_layer
+    output_name = "import/" + output_layer
 
-            # Read in the image_data
-            image_data = tf.gfile.FastGFile(image, 'rb').read()
+    input_operation = graph.get_operation_by_name(input_name)
+    output_operation = graph.get_operation_by_name(output_name)
+
+    frame_predictions = []
+
+    for i, frame in enumerate(frames):
+        filename = frame[0]
+        label = frame[1]
+
+        t = read_tensor_from_image_file(filename)
+
+        with tf.Session() as sess:
+            pbqr = tqdm(total=len(frames))
 
             try:
-                predictions = sess.run(
-                    softmax_tensor,
-                    {'DecodeJpeg/contents:0': image_data}
-                )
-                prediction = predictions[0]
-                # print prediction
-            except KeyboardInterrupt:
-                print("You quit with ctrl+c")
-                sys.exit()
-            except:
-                print("Error making prediction, continuing.")
-                continue
+                results = sess.run(output_operation.outputs[0], {
+                    input_operation.outputs[0]: t
+                })
 
-            # Save the probability that it's each of our classes.
-            frame_predictions.append([prediction, label, frameCount])
+                prediction = results[0]
+            except KeyboardInterrupt:
+                print("You chose to exit.")
+                sys.exit()
+
+            frame_predictions.append([prediction, label])
 
             if i > 0 and i % 10 == 0:
                 pbar.update(10)
 
         pbar.close()
-
         return frame_predictions
+
 
 
 def get_accuracy(predictions, labels):
@@ -104,7 +139,7 @@ def main():
     batch = '1'
     # batch = '2'
 
-    with open('data/labeled-frames-' + batch + '.pkl', 'rb') as fin:
+    with open('data/training-labels.pkl', 'rb') as fin:
         frames = pickle.load(fin)
 
     # for frame in frames:
