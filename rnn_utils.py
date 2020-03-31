@@ -10,80 +10,89 @@ import pickle
 import math
 
 
-def get_data(filename, num_frames, num_classes, input_length, ifTrain):
-    """Get the data from our saved predictions or pooled features."""
+def get_data(filename, num_frames, num_classes, input_length, train):
+    """Get the data from our saved predictions or pooled features.
+    It has to load an object though... using make_predictions.py
+
+    filename: object to load data from (iterable list with two items per object:
+        probably features and label)
+    num_frames: number of frames per video?
+    num_classes: number of classifications? there could be
+    input_length: similar to num_classes?
+    """
 
     # Local vars.
-    X = []
-    y = []
+    input_list = []
+    output = []
     temp_list = deque()
     labels = {}
     count = 0
 
     # Open and get the features.
     with open(filename, 'rb') as fin:
-        frames = pickle.load(fin)
+        frames = pickle.load(fin)  # Open a filename into frames
         # for x in frames:
         #     print x
-        for i, frame in enumerate(frames):
 
-            features = frame[0]
-            actual = frame[1].lower()
+    for frame in frames:
+        features = frame[0]
+        # Possibly the name of the result itself?
+        actual = frame[1].lower()
 
-            # frameCount = frame[2]
+        # frameCount = frame[2]
 
-            # Convert our labels into binary.
-            if actual in labels:
-                actual = labels[actual]
-            else:
-                labels[actual] = count
-                # actual = count
-                count += 1
+        # Convert our labels into integers.
+        if actual in labels:
+            actual = labels[actual]
+        else:
+            labels[actual] = count
+            # actual = count
+            count += 1
 
-            # Add to the queue.
-            if len(temp_list) == num_frames - 1:
-                temp_list.append(features)
-                flat = list(temp_list)
-                X.append(np.array(flat))
-                y.append(actual)
-                temp_list.clear()
-            else:
-                temp_list.append(features)
-                continue
+        # Add to the lists.
+        if len(temp_list) == num_frames - 1:
+            temp_list.append(features)
+            flat = list(temp_list)
+            input_list.append(np.array(flat))
+            output.append(actual)
+            temp_list.clear()
+        else:
+            temp_list.append(features)
+            continue
+
     for key in labels:
         print(key, labels[key])
 
-    print("Total dataset size: %d" % len(X))
+    print("Total dataset size: %d" % len(input_list))
 
     # Numpy.
-    X = np.array(X)
-    y = np.array(y)
+    input_list = np.array(input_list)
+    output = np.array(output)
 
-    print("\n", X.shape, y.shape, "\n")
+    print("\n", input_list.shape, output.shape, "\n")
 
     # Reshape.
-    X = X.reshape(-1, num_frames, input_length)
+    # Ignore too-many-function-args
+    input_list = input_list.reshape(-1, num_frames, input_length)
+    # Try to not think too much about it? It imports well...
     num_classes = len(labels)
 
     # print(X[1][0])
 
-    print (num_classes)
-    print (labels)
+    print(num_classes)
+    print(labels)
 
     # print(y)
 
     # One-hot encoded categoricals.
-    y = to_categorical(y, num_classes)
+    output = to_categorical(output, num_classes)
     # y = y.reshape(-1, num_classes, input_length)
 
     # print(y)
 
     # Split into train and test.
-    # X_train, X_test, y_train, y_test = train_test_split(
-    #     X, y, test_size=0.1, random_state=42)
-
-    X_train, X_test = train_test_split(X, test_size=0.1)
-    y_train, y_test = train_test_split(y, test_size=0.1)
+    input_train, input_test, output_train, output_test = train_test_split(
+        input_list, output, test_size=0.1)
 
     # num_of_rows = int((4) * 0.8)
     # num_of_rowz = int((80) * 0.8)
@@ -101,14 +110,14 @@ def get_data(filename, num_frames, num_classes, input_length, ifTrain):
     #
     # print(X_train.shape, X_test.shape, y_train.shape, y_test.shape)
 
-    if ifTrain:
-        return X_train, X_test, y_train, y_test
-    else:
-        return X, y
+    if train:
+        return input_train, input_test, output_train, output_test
+    # Otherwise..
+    return input_list, output
 
 
 def get_network(frames, input_size, num_classes):
-    """Create our LSTM"""
+    """Create an LSTM network of two 128-unit layers"""
     net = tflearn.input_data(shape=[None, frames, input_size])
     net = tflearn.lstm(net, 128, dropout=0.8, return_seq=True)
     net = tflearn.lstm(net, 128)
@@ -119,7 +128,7 @@ def get_network(frames, input_size, num_classes):
 
 
 def get_network_deep(frames, input_size, num_classes):
-    """Create a deeper LSTM"""
+    """Create a deeper LSTM of three 64-unit layers"""
     net = tflearn.input_data(shape=[None, frames, input_size])
     net = tflearn.lstm(net, 64, dropout=0.2, return_seq=True)
     net = tflearn.lstm(net, 64, dropout=0.2, return_seq=True)
@@ -131,7 +140,7 @@ def get_network_deep(frames, input_size, num_classes):
 
 
 def get_network_wide(frames, input_size, num_classes):
-    """Create a wider LSTM"""
+    """Create a wider LSTM of one 256-unit layer"""
     net = tflearn.input_data(shape=[None, frames, input_size])
     # net = tflearn.input_data(shape=[None, frames])
     net = tflearn.lstm(net, 256, dropout=0.3)
@@ -142,7 +151,7 @@ def get_network_wide(frames, input_size, num_classes):
 
 
 def get_network_wider(frames, input_size, num_classes):
-    """Create a wider LSTM"""
+    """Create a much wider LSTM of one 512-unit layer"""
     net = tflearn.input_data(shape=[None, frames, input_size])
     net = tflearn.lstm(net, 512, dropout=0.2)
     net = tflearn.fully_connected(net, num_classes, activation='softmax')
