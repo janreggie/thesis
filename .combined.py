@@ -1,3 +1,6 @@
+'''
+Doesn't do anything either really...
+'''
 import tflearn
 from tflearn.data_utils import to_categorical
 from tflearn.layers.core import input_data

@@ -33,8 +33,8 @@ def main(filename, frames, batch_size, num_classes, input_length):
     hc = [np.argmax(every) for every in hc]
     print(hc)
     aadi = [np.argmax(every) for every in y_train]
-    print ("l1 :", len(aadi))
-    print ("l2 ", len(hc))
+    print("l1 :", len(aadi))
+    print("l2 ", len(hc))
     answer = []
 
     for i in range(0, len(hc)):
@@ -44,10 +44,11 @@ def main(filename, frames, batch_size, num_classes, input_length):
     print(answer)
     f = open("results.txt", "w")
     for x in answer:
-        print (x[0], x[1])
+        print(x[0], x[1])
         f.write(str(x[0])+" "+str(x[1])+"\n")
 
     print(model.evaluate(X_train, y_train))
+
 
 if __name__ == '__main__':
     filename = 'data/test-results.pkl'
