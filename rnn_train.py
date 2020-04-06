@@ -4,14 +4,14 @@ train an RNN (LSTM) to examine temporal dependencies.
 """
 import os
 import tflearn
-from rnn_utils import get_network_deep, get_data
+from rnn_utils import get_network_deep, get_data_alt
 
 
-def main(filename, frames, batch_size, num_classes, input_length):
+def main(input_filename, output_filename, frames, batch_size, num_classes, input_length):
     """From the blog post linked above."""
     # Get our data.
-    x_train, x_test, y_train, y_test = get_data(
-        filename, frames, num_classes, input_length, True)
+    x_train, x_test, y_train, y_test = get_data_alt(
+        input_filename, output_filename, frames, num_classes, input_length, True)
 
     # Get sizes.
     print("y_train[0] : ", y_train)
@@ -44,11 +44,13 @@ def main(filename, frames, batch_size, num_classes, input_length):
 if __name__ == '__main__':
     # filename = 'data/cnn-features-frames-1.pkl'
     # input_length = 2048
-    # FILENAME = 'data/training-results.pkl'
-    FILENAME = 'video_x_InceptionV3.npy'
+    INPUT_FILENAME = r'C:\Users\CTC219-PC01\Documents\thesis\video_x_VGG16.npy'
+    OUTPUT_FILENAME = r'C:\Users\CTC219-PC01\Documents\thesis\video_y_VGG16.npy'
+    # FILENAME = 'video_x_InceptionV3.npy'
     INPUT_LENGTH = 4
     FRAMES = 118
     BATCH_SIZE = 64
     NUM_CLASSES = 4
 
-    main(FILENAME, FRAMES, BATCH_SIZE, NUM_CLASSES, INPUT_LENGTH)
+    main(INPUT_FILENAME, OUTPUT_FILENAME, FRAMES,
+         BATCH_SIZE, NUM_CLASSES, INPUT_LENGTH)
