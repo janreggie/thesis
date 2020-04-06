@@ -110,7 +110,7 @@ def extract_features_and_store(train_generator, validation_generator, base_model
     for input_datum, output_datum in train_generator:
         # input_datum: numpy array of batch of images
         # output_datum: numpy array of corresponding labels
-        if batch >= (56021/BATCH_SIZE):  # where did 56021 come from?!
+        if batch >= (3974/BATCH_SIZE):  # where did 56021 come from?!
             break
         print("Predict on batch: ", batch)
         if input_tensors is None:
@@ -125,8 +125,8 @@ def extract_features_and_store(train_generator, validation_generator, base_model
 
     # After that, they are to be shuffled and persistently saved.
     input_tensors, output_tensors = shuffle(input_tensors, output_tensors)
-    np.save(open('video_x_VGG16.npy', 'w'), input_tensors)
-    np.save(open('video_y_VGG16.npy', 'w'), output_tensors)
+    np.save('video_x_VGG16.npy', input_tensors)
+    np.save('video_y_VGG16.npy', output_tensors)
 
     # Now do the same for validation_generator
     input_tensors = None
@@ -146,8 +146,8 @@ def extract_features_and_store(train_generator, validation_generator, base_model
         batch += 1
 
     input_tensors, output_tensors = shuffle(input_tensors, output_tensors)
-    np.save(open('video_x_validate_VGG16.npy', 'w'), input_tensors)
-    np.save(open('video_y_validate_VGG16.npy', 'w'), output_tensors)
+    np.save('video_x_validate_VGG16.npy', input_tensors)
+    np.save('video_y_validate_VGG16.npy', output_tensors)
 
     train_data = np.load(open('video_x_VGG16.npy'))
     train_labels = np.load(open('video_y_VGG16.npy'))
