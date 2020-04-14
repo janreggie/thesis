@@ -98,10 +98,10 @@ def extract_features_and_store(train_generator, validation_generator, base_model
     using a base_model and returns the input (features) and output (labels) tensors.
 
     Files that will be written:
-    - video_x_VGG16.npy: input tensors for training data
-    - video_y_VGG16.npy: output labels for training data
-    - video_x_validate_VGG16.npy: input tensors for validation data
-    - video_y_validate_VGG16.npy: output labels for validation data
+    - video_x_train_inception.npy: input tensors for training data
+    - video_y_train_inception.npy: output labels for training data
+    - video_x_validate_inception.npy: input tensors for validation data
+    - video_y_validate_inception.npy: output labels for validation data
     '''
     # Extract features from input, output data in train_generator
     input_tensors = None   # "features" according to the CNN
@@ -125,8 +125,8 @@ def extract_features_and_store(train_generator, validation_generator, base_model
 
     # After that, they are to be shuffled and persistently saved.
     input_tensors, output_tensors = shuffle(input_tensors, output_tensors)
-    np.save('video_x_VGG16.npy', input_tensors)
-    np.save('video_y_VGG16.npy', output_tensors)
+    np.save('video_x_train_inception.npy', input_tensors)
+    np.save('video_y_train_inception.npy', output_tensors)
 
     # Now do the same for validation_generator
     input_tensors = None
@@ -146,14 +146,14 @@ def extract_features_and_store(train_generator, validation_generator, base_model
         batch += 1
 
     input_tensors, output_tensors = shuffle(input_tensors, output_tensors)
-    np.save('video_x_validate_VGG16.npy', input_tensors)
-    np.save('video_y_validate_VGG16.npy', output_tensors)
+    np.save('video_x_validate_inception.npy', input_tensors)
+    np.save('video_y_validate_inception.npy', output_tensors)
 
-    train_data = np.load(open('video_x_VGG16.npy'))
-    train_labels = np.load(open('video_y_VGG16.npy'))
+    train_data = np.load(open('video_x_train_inception.npy'))
+    train_labels = np.load(open('video_y_train_inception.npy'))
     train_data, train_labels = shuffle(train_data, train_labels)
-    validation_data = np.load(open('video_x_validate_VGG16.npy'))
-    validation_labels = np.load(open('video_y_validate_VGG16.npy'))
+    validation_data = np.load(open('video_x_validate_inception.npy'))
+    validation_labels = np.load(open('video_y_validate_inception.npy'))
     validation_data, validation_labels = shuffle(
         validation_data, validation_labels)
 
