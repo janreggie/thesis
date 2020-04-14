@@ -2,12 +2,12 @@
 Utilities used by our other RNN scripts.
 """
 from collections import deque
+import math
+import pickle
 from sklearn.model_selection import train_test_split
 from tflearn.data_utils import to_categorical
 import tflearn
 import numpy as np
-import pickle
-import math
 
 
 def get_data(filename, num_frames, num_classes, input_length, train):
@@ -121,7 +121,7 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     It has to load an object though... using make_predictions.py
 
     input_file: filename containing the features
-    output_file: filename containing the result
+    output_file: filename containing the labels
     num_frames: number of frames per video?
     num_classes: number of classifications? there could be
     input_length: similar to num_classes?

@@ -51,12 +51,12 @@ def main(filename, frames, batch_size, num_classes, input_length):
 
 
 if __name__ == '__main__':
-    filename = 'data/test-results.pkl'
-    input_length = 4
-    # filename = 'data/cnn-features-frames-2.pkl'
-    # input_length = 2048
-    frames = 118
-    batch_size = 64
-    num_classes = 4
+    FILENAME = 'data/test-results.pkl'
+    INPUT_LENGTH = 4
+    # FILENAME = 'data/cnn-features-frames-2.pkl'
+    # INPUT_LENGTH = 2048
+    FRAMES = 118
+    BATCH_SIZE = 64
+    NUM_CLASSES = 4
 
-    main(filename, frames, batch_size, num_classes, input_length)
+    main(FILENAME, FRAMES, BATCH_SIZE, NUM_CLASSES, INPUT_LENGTH)
