@@ -92,9 +92,6 @@ def get_accuracy(predictions, labels):
 
 
 def main():
-    '''
-    Does something
-    '''
     # batches = ['1']
     labels = get_labels()
 

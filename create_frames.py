@@ -1,9 +1,6 @@
-'''
-create_frames.py
-
-Simply augments a folder
-'''
 import Augmentor
+#
+#
 
 
 def frames(dataset, output=""):
@@ -30,4 +27,4 @@ def frames(dataset, output=""):
 
 
 if __name__ == '__main__':
-    frames('\\training\\')
+    frames("C:/Users/ryZen/Downloads/Thesis/source_videos/validate/beer/video_4","C:/Users/ryZen/Downloads/Thesis/source_videos/validate/beer/video_4")

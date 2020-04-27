@@ -38,7 +38,7 @@ import numpy as np
 BATCH_SIZE = 128
 TRAIN_FOLDER = 'train'
 VALIDATE_FOLDER = 'validate'
-SOURCE_FOLDER = 'C:/Users/CTC219-PC01/Documents/thesis/bantupalli_xie/source_videos/'
+SOURCE_FOLDER = 'C:/Users/ryZen\Downloads/Thesis/source_videos/'
 
 
 def bring_data_from_directory():
@@ -149,11 +149,11 @@ def extract_features_and_store(train_generator, validation_generator, base_model
     np.save('video_x_validate_inception.npy', input_tensors)
     np.save('video_y_validate_inception.npy', output_tensors)
 
-    train_data = np.load(open('video_x_train_inception.npy'))
-    train_labels = np.load(open('video_y_train_inception.npy'))
+    train_data = np.load('video_x_train_inception.npy')
+    train_labels = np.load('video_y_train_inception.npy')
     train_data, train_labels = shuffle(train_data, train_labels)
-    validation_data = np.load(open('video_x_validate_inception.npy'))
-    validation_labels = np.load(open('video_y_validate_inception.npy'))
+    validation_data = np.load('video_x_validate_inception.npy')
+    validation_labels = np.load('video_y_validate_inception.npy')
     validation_data, validation_labels = shuffle(
         validation_data, validation_labels)
 

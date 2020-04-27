@@ -7,17 +7,14 @@ and the last few are recurrent.
 '''
 import tflearn
 
-TEST_FOLDER = 'test'
-TRAIN_FOLDER = 'training'
+test = 'test'
+train = 'training'
 
 
 def getXY():
-    '''
-    Loads TRAIN_FOLDER and returns inputs and outputs
-    '''
-    x, y = tflearn.data_utils.image_preloader(TRAIN_FOLDER, image_shape=(
+    X, Y = tflearn.data_utils.image_preloader(train, image_shape=(
         80, 80), mode='folder', categorical_labels='True', normalize=True)
-    return x, y
+    return X, Y
 
 
 def main():
@@ -68,7 +65,6 @@ def main():
     network = tflearn.regression(
         network, optimizer='adam', loss='categorical_crossentropy', name='target')
 
-    # Tries to fit TRAIN_FOLDER
     model = tflearn.DNN(network, tensorboard_verbose=0)
     X, Y = getXY()
     model.fit(X, Y, n_epoch=1, validation_set=0.1,
