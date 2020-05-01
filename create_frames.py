@@ -30,4 +30,5 @@ def frames(dataset, output=""):
 
 
 if __name__ == '__main__':
-    frames('\\training\\')
+    frames("C:/Users/ryZen/Downloads/Thesis/source_videos/validate/beer/video_4",
+           "C:/Users/ryZen/Downloads/Thesis/source_videos/validate/beer/video_4")

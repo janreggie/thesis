@@ -31,13 +31,11 @@ def split(path):
 
     Returns:
     input_list = [
-        path/videoclass1/gesture1/file{8,16,24,...,96}.jpg,
-        path/videoclass1/gesture2/file{4,12,20,...,100}.jpg
-    ]
+        path/videoclass1/gesture1/file{8,16,24,...,96}.jpg, 
+        path/videoclass1/gesture2/file{4,12,20,...,100}.jpg]
     output_list = [
         0,0,0,...,0,
-        1,1,1,...,1
-    ]
+        1,1,1,...,1]
 
     Writes:
     path/videoclass1/gesture1/file{8,16,24,...,96}.jpg -> path/videoclass1/{0,1,2,...,11}_file{8,16,24,...,96}.jpg
@@ -46,7 +44,6 @@ def split(path):
     input_list = []
     output_list = []
     count = 0
-    gesture_index = 0
 
     # Choose path as directory
     # rootpath = os.getcwd()
@@ -55,17 +52,15 @@ def split(path):
     os.chdir(path)
     dataset = os.getcwd()
 
-    for video_class in os.listdir(dataset):  # [videoclass1, videoclass2, ...]
+    for video_class in os.listdir(dataset):
         print(video_class)
         gesture_folders = os.listdir(os.path.join(dataset, video_class))
-        # gesture_folders == [gesture1, gesture2, ...]
 
-        for gesture_folder in gesture_folders:
+        for gesture_index, gesture_folder in enumerate(gesture_folders):
             gesture = os.listdir(
                 os.path.join(dataset, video_class, gesture_folder))
-            # gesture == [file1.jpg, file2.jpg, ...]
 
-            for image_filename in gesture:
+            for count, image_filename in enumerate(gesture):
                 if video_class == 'beer':  # Somehow this is a different case...?
                     if count % 4 == 0:
                         image = imread(
