@@ -38,7 +38,7 @@ import numpy as np
 BATCH_SIZE = 128
 TRAIN_FOLDER = 'train'
 VALIDATE_FOLDER = 'validate'
-SOURCE_FOLDER = 'C:/Users/ryZen\Downloads/Thesis/source_videos/'
+SOURCE_FOLDER = 'C:/Users/ryZen/Downloads/Thesis/source_videos/'
 
 
 def bring_data_from_directory():
@@ -110,7 +110,7 @@ def extract_features_and_store(train_generator, validation_generator, base_model
     for input_datum, output_datum in train_generator:
         # input_datum: numpy array of batch of images
         # output_datum: numpy array of corresponding labels
-        if batch >= (3974/BATCH_SIZE):  # where did 56021 come from?!
+        if batch >= (7948/BATCH_SIZE):  # where did 56021 come from?!
             break
         print("Predict on batch: ", batch)
         if input_tensors is None:

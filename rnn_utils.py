@@ -139,9 +139,10 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     all_features = np.load(input_file)  # Open a filename into frames
     actual_labels = np.load(output_file)
 
-    print(all_features.shape[0])
-    print(actual_labels.shape[0])
-    time.sleep(10)
+    #print(all_features.shape[0])
+    #print(actual_labels.shape[0])
+
+    #time.sleep(10)
 
     for i in range(actual_labels.shape[0]):
         print("Opening {}".format(i))
@@ -173,11 +174,12 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
 
     print("Total dataset size: %d" % len(input_list))
 
+
     # Numpy.
     input_list = np.array(input_list)
     output_list = np.array(output_list)
 
-    print("\n", input_list.shape, output_list.shape, "\n")
+    #print("\n", input_list.shape, output_list.shape, "\n")
 
     # Reshape.
     # Ignore too-many-function-args
@@ -193,14 +195,19 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     # print(y)
 
     # One-hot encoded categoricals.
-    #output_list = to_categorical(output_list, num_classes)
-    output_list = output_list.reshape(-1, num_classes, input_length)
+    # output_list = to_categorical(output_list, num_classes)
+    # output_list = output_list.reshape(-1, num_classes, input_length)
 
     # print(y)
 
     # Split into train and test.
+    output_list = output_list.flatten()
+    print(input_list[0])
+    print(output_list[0])
+    time.sleep(10)
     input_train, input_test, output_train, output_test = train_test_split(
         input_list, output_list, test_size=0.1)
+
 
     # num_of_rows = int((4) * 0.8)
     # num_of_rowz = int((80) * 0.8)
