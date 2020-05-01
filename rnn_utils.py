@@ -8,6 +8,7 @@ from sklearn.model_selection import train_test_split
 from tflearn.data_utils import to_categorical
 import tflearn
 import numpy as np
+import time
 
 
 def get_data(filename, num_frames, num_classes, input_length, train):
@@ -132,26 +133,30 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     input_list = []
     output = []
     temp_list = deque()
-    classes = {}
+    #classes = {}
     count = 0
 
     # Open and get the features.
     all_features = np.load(input_file)  # Open a filename into frames
     actual_labels = np.load(output_file)
 
-    for i in range(actual_labels.size):
+    print(all_features.shape[0])
+    print(actual_labels.shape[0])
+    time.sleep(10)
+
+    for i in range(actual_labels.shape[0]):
         print("Opening {}".format(i))
         features = all_features[i]
         actual = actual_labels[i]
         print(features)
         print(actual)
         # Convert our classes into integers.
-        if actual in classes:
-            actual = classes[actual]
-        else:
-            classes[actual] = count
-            # actual = count
-            count += 1
+        #if actual in classes:
+        #    actual = classes[actual]
+        #else:
+        #    classes[actual] = count
+        #    actual = count
+        #    count += 1
 
         # Add to the lists.
         if len(temp_list) == num_frames - 1:
@@ -164,8 +169,8 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
             temp_list.append(features)
             continue
 
-    for key in classes:
-        print(key, classes[key])
+    #for key in classes:
+    #    print(key, classes[key])
 
     print("Total dataset size: %d" % len(input_list))
 
@@ -179,17 +184,17 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     # Ignore too-many-function-args
     input_list = input_list.reshape(-1, num_frames, input_length)
     # Try to not think too much about it? It imports well...
-    num_classes = len(classes)
+    #num_classes = len(classes)
 
     # print(X[1][0])
 
-    print(num_classes)
-    print(classes)
+    #print(num_classes)
+    #print(classes)
 
     # print(y)
 
     # One-hot encoded categoricals.
-    output = to_categorical(output, num_classes)
+    #output = to_categorical(output, num_classes)
     # y = y.reshape(-1, num_classes, input_length)
 
     # print(y)

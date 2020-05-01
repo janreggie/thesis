@@ -6,7 +6,7 @@ load_graph, read_tensor among them.
 '''
 import sys
 import tensorflow as tf
-from tensorflow.platform import gfile
+# from tensorflow.platform import gfile
 from tqdm import tqdm
 import argparse
 import time
@@ -21,8 +21,8 @@ def load_graph(model_file):
     graph = tf.Graph()
     graph_def = tf.GraphDef()
 
-    with open(model_file, "rb") as opened_file:
-        graph_def.ParseFromString(opened_file.read())
+    with open(model_file, "rb") as f:
+        graph_def.ParseFromString(f.read())
     with graph.as_default():
         tf.import_graph_def(graph_def)
 
@@ -99,7 +99,7 @@ def main():
     graph = load_graph(model_file)
     input_name = "import/" + input_layer
     output_name = "import/" + output_layer
-    
+    #
     # print(graph.get_operations())
 
     with tf.Session() as sess:
@@ -114,7 +114,7 @@ def main():
         for i, frame in enumerate(frames):
             image = frame[0]
             label = frame[1]
-            # frameCount = frame[2]
+            frameCount = frame[2]
             t = tf.gfile.FastGFile(image, 'rb').read()
             try:
                 start = time.time()
