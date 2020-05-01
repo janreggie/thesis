@@ -131,10 +131,9 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     # Local vars.
 
     input_list = []
-    output = []
+    output_list = []
     temp_list = deque()
     #classes = {}
-    count = 0
 
     # Open and get the features.
     all_features = np.load(input_file)  # Open a filename into frames
@@ -151,9 +150,9 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
         print(features)
         print(actual)
         # Convert our classes into integers.
-        #if actual in classes:
+        # if actual in classes:
         #    actual = classes[actual]
-        #else:
+        # else:
         #    classes[actual] = count
         #    actual = count
         #    count += 1
@@ -163,22 +162,22 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
             temp_list.append(features)
             flat = list(temp_list)
             input_list.append(np.array(flat))
-            output.append(actual)
+            output_list.append(actual)
             temp_list.clear()
         else:
             temp_list.append(features)
             continue
 
-    #for key in classes:
+    # for key in classes:
     #    print(key, classes[key])
 
     print("Total dataset size: %d" % len(input_list))
 
     # Numpy.
     input_list = np.array(input_list)
-    output = np.array(output)
+    output_list = np.array(output_list)
 
-    print("\n", input_list.shape, output.shape, "\n")
+    print("\n", input_list.shape, output_list.shape, "\n")
 
     # Reshape.
     # Ignore too-many-function-args
@@ -188,20 +187,20 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
 
     # print(X[1][0])
 
-    #print(num_classes)
-    #print(classes)
+    # print(num_classes)
+    # print(classes)
 
     # print(y)
 
     # One-hot encoded categoricals.
-    #output = to_categorical(output, num_classes)
-    # y = y.reshape(-1, num_classes, input_length)
+    #output_list = to_categorical(output_list, num_classes)
+    output_list = output_list.reshape(-1, num_classes, input_length)
 
     # print(y)
 
     # Split into train and test.
     input_train, input_test, output_train, output_test = train_test_split(
-        input_list, output, test_size=0.1)
+        input_list, output_list, test_size=0.1)
 
     # num_of_rows = int((4) * 0.8)
     # num_of_rowz = int((80) * 0.8)
@@ -222,7 +221,7 @@ def get_data_alt(input_file, output_file, num_frames, num_classes, input_length,
     if train:
         return input_train, input_test, output_train, output_test
     # Otherwise..
-    return input_list, output
+    return input_list, output_list
 
 
 def get_network(frames, input_size, num_classes):
