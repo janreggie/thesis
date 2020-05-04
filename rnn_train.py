@@ -44,8 +44,8 @@ def main(input_filename, output_filename, frames, batch_size, num_classes, input
 if __name__ == '__main__':
     # filename = 'data/cnn-features-frames-1.pkl'
     # input_length = 2048
-    INPUT_FILENAME = r'C:\Users\ryZen\Downloads\Thesis\source_videos\video_x_train_inception.npy'
-    OUTPUT_FILENAME = r'C:\Users\ryZen\Downloads\Thesis\source_videos\video_y_train_inception.npy'
+    INPUT_FILENAME = r'video_x_train_inception.npy'
+    OUTPUT_FILENAME = r'video_y_train_inception.npy'
     # FILENAME = 'video_x_InceptionV3.npy'
     INPUT_LENGTH = 4
     FRAMES = 118
